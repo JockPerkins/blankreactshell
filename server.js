@@ -9,7 +9,7 @@ const compiler = webpack(webpackConfig);
 
 app.use(express.static(__dirname + '/www'));
 
-app.use(webpackDevMiddleware(compiler, {/
+app.use  \\\\\(webpackDevMiddleware(compiler, {
   hot: true,
   filename: 'bundle.js',
   publicPath: '/',
