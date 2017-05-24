@@ -4,7 +4,7 @@
   "description": "One Page App",
   "main": "index.js",
   "scripts": {
-    "test": "./node_modules/jshint/bin/jshint www/bundle.js"
+    "test": "./node_modules/jshint/bin/jshint src/main.js"
   },
   "keywords": [],
   "author": "",
