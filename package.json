@@ -6,7 +6,7 @@
   "scripts": {
     "start": "node server.js",
     "compile": "webpack",
-    "test": "./node_modules/jshint/bin/jshint www/bundle.js"
+    "test": "./node_modules/jshint/bin/jshint src/App.js && ./node_modules/jshint/bin/jshint src/main.js"
   },
   "keywords": [],
   "author": "",
