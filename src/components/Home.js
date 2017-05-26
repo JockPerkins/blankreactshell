@@ -12,6 +12,7 @@ class Home extends React.Component {
     super(props);
     this.state = HomeStore.getState();
     this.onChange = this.onChange.bind(this);
+    this.getNewsStories();
   }
 
   componentDidMount() {
@@ -26,12 +27,29 @@ class Home extends React.Component {
     this.setState(state);
   }
 
+  getNewsStories(){
+    HomeActions.getNewsStories();
+  }
+
   render() {
+    if(this.state.newsstories){
+      var newsList = [];
+      var newsStories = this.state.newsstories;
+
+      for(var index = 0; index < newsStories.length; index++){
+        newsList.push(
+          <li>{newsStories[index].Title}</li>
+        )
+      }
+    }
     return (
       <div id="home">
         <div className="container">
           <div className="main-content">
-          <h1>This is a shell</h1>
+            <h1>This is a shell</h1>
+            <ul>
+              {newsList}
+            </ul>
           </div>
         </div>
       </div>

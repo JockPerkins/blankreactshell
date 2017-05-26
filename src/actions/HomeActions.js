@@ -8,8 +8,23 @@ import {
 class HomeActions {
   constructor() {
     this.generateActions(
-
+      'getNewsStoriesSuccess',
+      'getNewsStoriesFail'
     );
+  }
+
+  getNewsStories(){
+    $.ajax({
+      url: '/api/newsstories/getnewsstories/',
+      type: 'GET'
+    })
+    .done((data) => {
+      this.getNewsStoriesSuccess(data);
+    })
+    .fail((jqXhr) => {
+      this.getNewsStoriesFail(jqXhr);
+    })
+    return true;
   }
 }
 

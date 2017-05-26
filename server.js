@@ -7,6 +7,11 @@ const path = require('path')
 
 const compiler = webpack(webpackConfig);
 
+let sequelize = require('./models').sequelize;
+
+let newsstories = require('./apis/newsstories');
+app.use('/api/newsstories', newsstories);
+
 app.use(express.static(__dirname + '/www'));
 
 app.use(webpackDevMiddleware(compiler, {
