@@ -1,7 +1,7 @@
-import React from 'react';
+const React = require('react');
 // DEFAULT
-import Header from './components/Header';
-import Footer from './components/Footer';
+const Header = require('./components/Header');
+const Footer = require('./components/Footer');
 
 class App extends React.Component {
   render() {
