@@ -1,18 +1,18 @@
 const $ = require('jquery');
 const exec = require('child_process').exec;
 const http = require('http');
-var path = require('path');
-var appDir = path.dirname(require.main.filename);
 
-console.log(appDir);
+var fs        = require('fs');
+var path      = require('path');
+var Sequelize = require('sequelize');
+var basename  = path.basename(module.filename);
+var env       = process.env.NODE_ENV || 'development';
+var config    = require(__dirname + '/config/config.json')[env];
+var db        = {};
+var chalk     = require('chalk');
 
 
 var fileDir = 'src/';
-var checkApis = [
-  '/api/newsstories/getnewsstories/'
-];
-
-var tableName = '/api/newsstories/getnewsstories/';
 
 // Gets all files in the target directory, including subdirectories
 function getAllFiles(dir, filelist) {
@@ -47,28 +47,23 @@ function runJsHint(fileDir, fileName){
     console.log(`stderr: ${stderr}`);
   });
 }
+// function to test the database authentication
+function testDatabase(){
+  if (config.use_env_variable) {
+    var sequelize = new Sequelize(process.env[config.use_env_variable]);
+  } else {
+    var sequelize = new Sequelize(config.database, config.username, config.password, config);
+  }
 
-/*function testDatabase(tableName){
-  var apiCheck = appDir + tableName;
-  http.get(apiCheck, (res) => {
-    const { statusCode } = res;
-    console.log(res);
-  });
-  /*$.ajax({
-    url: tableName,
-    type: 'GET'
-  })
-  .done((data) => {
-    console.log(data);
-  })
-  .fail((jqXhr) => {
-    console.log(jqXhr);
-  })
-  return true;
-}*/
-
-
-
+  sequelize
+    .authenticate()
+    .then(() => {
+      console.log(chalk.green('Connection has been established successfully.'));
+    })
+    .catch((err) => {
+      console.error(chalk.red('Unable to connect to the database:', err));
+    });
+}
 
 // Run the npm install
 exec('npm install', (error, stdout, stderr) => {
@@ -80,19 +75,6 @@ exec('npm install', (error, stdout, stderr) => {
   console.log(`stderr: ${stderr}`);
 });
 // Run the js linter
-//getAllFiles(fileDir);
-/*http.get('/api/newsstories/getnewsstories/', (res) => {
-  const { statusCode } = res;
-  console.log(res);
-});
-*/
-var apiCheck = appDir + tableName;
-http.get(apiCheck, (res) => {
-  const { statusCode } = res;
-  console.log(res);
-});
-
-// Test the database tables
-/*for(var index = 0; index <= checkApis.length; index++){
-  testDatabase(checkApis.index);
-}*/
+getAllFiles(fileDir);
+// Run the database check
+testDatabase();
