@@ -46,8 +46,9 @@ function runJsHint(fileDir, fileName){
   });
 }
 
-function testDatabase(tableName){
-  http.get(tableName, (res) => {
+/*function testDatabase(tableName){
+  var apiCheck = appDir + tableName;
+  http.get(apiCheck, (res) => {
     const { statusCode } = res;
     console.log(res);
   });
@@ -61,8 +62,8 @@ function testDatabase(tableName){
   .fail((jqXhr) => {
     console.log(jqXhr);
   })
-  return true;*/
-}
+  return true;
+}*/
 
 
 
@@ -82,7 +83,12 @@ exec('npm install', (error, stdout, stderr) => {
   const { statusCode } = res;
   console.log(res);
 });
-
+*/
+var apiCheck = appDir + tableName;
+http.get(apiCheck, (res) => {
+  const { statusCode } = res;
+  console.log(res);
+});
 
 // Test the database tables
 /*for(var index = 0; index <= checkApis.length; index++){
