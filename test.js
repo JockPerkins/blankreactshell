@@ -12,6 +12,8 @@ var checkApis = [
   '/api/newsstories/getnewsstories/'
 ];
 
+var tableName = '/api/newsstories/getnewsstories/';
+
 // Gets all files in the target directory, including subdirectories
 function getAllFiles(dir, filelist) {
   var fs = fs || require('fs'), files = fs.readdirSync(dir);
