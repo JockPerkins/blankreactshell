@@ -6,8 +6,6 @@ const http = require('http');
 var fileDir = 'src/';
 var fileTest = 'src/';
 
-
-
 // Gets all files in the target directory, including subdirectories
 function getAllFiles(dir, filelist) {
   var fs = fs || require('fs'), files = fs.readdirSync(dir);
@@ -27,12 +25,10 @@ function getAllFiles(dir, filelist) {
   });
   return filelist;
 };
-
-var allFiles = getAllFiles(fileDir);
-
+// function to run each specified file through js linter
 function runJsHint(fileDir, fileName){
   var command = "./node_modules/.bin/eslint " + fileDir + fileName;
-  console.log(command);
+  console.log("Linting: " + fileDir + fileName);
 
   exec(command, (error, stdout, stderr) => {
     if (error) {
@@ -44,19 +40,19 @@ function runJsHint(fileDir, fileName){
   });
 }
 
-// JSLint the pages
-/*for(var index = 0; index <= allFiles.length; index++){
-  var command = "./node_modules/jshint/bin/jshint " + fileTest + allFiles[index];
+// Run the npm install
+exec('npm install', (error, stdout, stderr) => {
+  if (error) {
+    console.error(`exec error: ${error}`);
+    return;
+  }
+  console.log(`stdout: ${stdout}`);
+  console.log(`stderr: ${stderr}`);
+});
+// Run the js linter
+getAllFiles(fileDir);
 
-  exec(command, (error, stdout, stderr) => {
-    if (error) {
-      console.error(`exec error: ${error}`);
-      return;
-    }
-    console.log(`stdout: ${stdout}`);
-    console.log(`stderr: ${stderr}`);
-  });
-}*/
+
 
 /*
   var checkApis = [
@@ -83,16 +79,6 @@ function runJsHint(fileDir, fileName){
     })
     return true;
   }
-
-  // Run the npm install
-  /*exec('npm install', (error, stdout, stderr) => {
-    if (error) {
-      console.error(`exec error: ${error}`);
-      return;
-    }
-    console.log(`stdout: ${stdout}`);
-    console.log(`stderr: ${stderr}`);
-  });
 
   // Test the database tables
   for(var index = 0; index <= checkApis.length; index++){
