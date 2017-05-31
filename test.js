@@ -94,9 +94,9 @@ function runJsLinter(fileDir, fileName){
 
 function runTest(){
   // Run the npm install
-  //var didNpmInstall = ;
+  var didNpmInstall = npmInstall();
   // Check npmInstall returned correctly
-  if(npmInstall()){
+  if(didNpmInstall){
     console.log(chalk.green('NPM Install was successful.'));
     // Run the database check
     //var didDatabaseConnect = ;
@@ -109,18 +109,18 @@ function runTest(){
       }
       else {
         console.log(chalk.red('Files need attention, please make the amends listed in the console.'));
-        return false
+        return false;
       }
     }
     else {
       console.error(chalk.red('Unable to connect to the database:', err));
-      return false
+      return false;
     }
 
   }
   else {
     console.log(chalk.red('Error when running npm install.'));
-    return false
+    return false;
   }
 }
 
