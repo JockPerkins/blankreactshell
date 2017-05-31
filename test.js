@@ -109,18 +109,18 @@ function runTest(){
       }
       else {
         console.log(chalk.red('Files need attention, please make the amends listed in the console.'));
-        return false;
+        return false
       }
     }
     else {
       console.error(chalk.red('Unable to connect to the database:', err));
-      return false;
+      return false
     }
 
   }
   else {
     console.log(chalk.red('Error when running npm install.'));
-    return false;
+    return false
   }
 }
 
