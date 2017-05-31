@@ -109,17 +109,20 @@ function runTest(){
       }
       else {
         console.log(chalk.red('Files need attention, please make the amends listed in the console.'));
+        process.exit(5);
         return false;
       }
     }
     else {
       console.error(chalk.red('Unable to connect to the database:', err));
+      process.exit(5);
       return false;
     }
 
   }
   else {
     console.log(chalk.red('Error when running npm install.'));
+    process.exit(5);
     return false;
   }
 }
@@ -131,4 +134,5 @@ if(testResult){
 }
 else {
   console.log(chalk.red("Tests failed, please see amendments above."));
+  process.exit(5);
 }
