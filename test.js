@@ -39,8 +39,10 @@ function runJsLinter(fileDir, fileName){
 
   exec(command, (error, stdout, stderr) => {
     if (error) {
-      console.error(`exec error: ${error}`);
-      return false;
+      //console.error(`exec error: ${error}`);
+      console.error(`Test failed with the follow error:`);
+      console.error(`${error}`);
+      break;
     }
     console.log(`stdout: ${stdout}`);
     console.log(`stderr: ${stderr}`);
