@@ -14,6 +14,37 @@ var chalk     = require('chalk');
 
 var fileDir = './src/';
 
+// function to run the npm install
+function npmInstall(){
+  exec('npm install', (error, stdout, stderr) => {
+    if (error) {
+      console.error(`exec error: ${error}`);
+      return false;
+    }
+    else {
+      console.log(`stdout: ${stdout}`);
+      console.log(`stderr: ${stderr}`);
+      return true;
+    }
+  });
+}
+// function to test the database authentication
+function testDatabase(){
+  if (config.use_env_variable) {
+    var sequelize = new Sequelize(process.env[config.use_env_variable]);
+  } else {
+    var sequelize = new Sequelize(config.database, config.username, config.password, config);
+  }
+
+  sequelize
+    .authenticate()
+    .then(() => {
+      return true;
+    })
+    .catch((err) => {
+      return false;
+    });
+}
 // Gets all files in the target directory, including subdirectories
 function getAllFiles(dir, filelist) {
   var fs = fs || require('fs'), files = fs.readdirSync(dir);
@@ -37,45 +68,65 @@ function getAllFiles(dir, filelist) {
 function runJsLinter(fileDir, fileName){
   var command = "./node_modules/.bin/eslint " + fileDir + fileName;
 
+
+  /*try {
+    exec(command, (error, stout, sterr) => {
+
+    });
+    console.log(`stdout: ${stdout}`);
+    console.log(`stderr: ${stderr}`);
+  } catch (error) {
+    console.error(`Test failed with the follow error:`);
+    console.error(`${error}`);
+  }*/
+
   exec(command, (error, stdout, stderr) => {
     if (error) {
       //console.error(`exec error: ${error}`);
       console.error(`Test failed with the follow error:`);
       console.error(`${error}`);
-      break;
+      return;
     }
     console.log(`stdout: ${stdout}`);
     console.log(`stderr: ${stderr}`);
   });
 }
-// function to test the database authentication
-function testDatabase(){
-  if (config.use_env_variable) {
-    var sequelize = new Sequelize(process.env[config.use_env_variable]);
-  } else {
-    var sequelize = new Sequelize(config.database, config.username, config.password, config);
-  }
 
-  sequelize
-    .authenticate()
-    .then(() => {
-      console.log(chalk.green('Connection has been established successfully.'));
-    })
-    .catch((err) => {
+function runTest(){
+  // Run the npm install
+  //var didNpmInstall = ;
+  // Check npmInstall returned correctly
+  if(npmInstall()){
+    console.log(chalk.green('NPM Install was successful.'));
+    // Run the database check
+    //var didDatabaseConnect = ;
+    if(testDatabase()){
+      console.log(chalk.green('Connection to database has been established successfully.'));
+      // Run the js linter
+      if(getAllFiles(fileDir)){
+        console.log(chalk.green('Files have all been correctly linted.'));
+        return true;
+      }
+      else {
+        console.log(chalk.red('Files need attention, please make the amends listed in the console.'));
+        return false;
+      }
+    }
+    else {
       console.error(chalk.red('Unable to connect to the database:', err));
-    });
+      return false;
+    }
+
+  }
+  else {
+    console.log(chalk.red('Error when running npm install.'));
+    return false;
+  }
 }
 
-// Run the npm install
-exec('npm install', (error, stdout, stderr) => {
-  if (error) {
-    console.error(`exec error: ${error}`);
-    return;
-  }
-  console.log(`stdout: ${stdout}`);
-  console.log(`stderr: ${stderr}`);
-});
-// Run the js linter
-getAllFiles(fileDir);
-// Run the database check
-testDatabase();
+if(runTest()){
+  console.log(chalk.green("All tests have been completed successfully."));
+}
+else {
+  console.log(chalk.red("Tests failed, please see amendments above."));
+}
