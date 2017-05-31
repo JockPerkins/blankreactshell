@@ -12,7 +12,7 @@ var db        = {};
 var chalk     = require('chalk');
 
 
-var fileDir = 'src/';
+var fileDir = './src/';
 
 // Gets all files in the target directory, including subdirectories
 function getAllFiles(dir, filelist) {
@@ -27,21 +27,20 @@ function getAllFiles(dir, filelist) {
       // doesn't add to list if its a hidden file
       if (file.charAt(0) != '.' || file == null) {
         //filelist.push(file);
-        runJsHint(dir, file);
+        runJsLinter(dir, file);
       }
     }
   });
   return filelist;
 };
 // function to run each specified file through js linter
-function runJsHint(fileDir, fileName){
+function runJsLinter(fileDir, fileName){
   var command = "./node_modules/.bin/eslint " + fileDir + fileName;
-  console.log("Linting: " + fileDir + fileName);
 
   exec(command, (error, stdout, stderr) => {
     if (error) {
       console.error(`exec error: ${error}`);
-      return;
+      return false;
     }
     console.log(`stdout: ${stdout}`);
     console.log(`stderr: ${stderr}`);
