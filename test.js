@@ -101,8 +101,8 @@ function runTest(){
       });
     }).catch((err) => {
       // Database has failed
-      console.error(chalk.red('Database connection was unsuccessful.'));
-      process.exit(1);
+      //console.error(chalk.red('Database connection was unsuccessful.'));
+      //process.exit(1);
     });
   }).catch((err) => {
     // NPM install has failed
