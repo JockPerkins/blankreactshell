@@ -124,7 +124,9 @@ function runTest(){
   }
 }
 
-if(runTest()){
+var testResult = runTest();
+
+if(testResult){
   console.log(chalk.green("All tests have been completed successfully."));
 }
 else {
