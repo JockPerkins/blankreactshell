@@ -10,40 +10,44 @@ var env       = process.env.NODE_ENV || 'development';
 var config    = require(__dirname + '/config/config.json')[env];
 var db        = {};
 var chalk     = require('chalk');
-
+var Promise   = require('promise');
 
 var fileDir = './src/';
 
 // function to run the npm install
 function npmInstall(){
-  exec('npm install', (error, stdout, stderr) => {
-    if (error) {
-      console.error(`exec error: ${error}`);
-      return false;
-    }
-    else {
-      console.log(`stdout: ${stdout}`);
-      console.log(`stderr: ${stderr}`);
-      return true;
-    }
+  return new Promise(function (fulfill, reject){
+    exec('npm install', (error, stdout, stderr) => {
+      if (error) {
+        console.error(`exec error: ${error}`);
+        reject(error);
+      }
+      else {
+        console.log(`stdout: ${stdout}`);
+        console.log(`stderr: ${stderr}`);
+        fulfill(stdout);
+      }
+    });
   });
 }
 // function to test the database authentication
 function testDatabase(){
-  if (config.use_env_variable) {
-    var sequelize = new Sequelize(process.env[config.use_env_variable]);
-  } else {
-    var sequelize = new Sequelize(config.database, config.username, config.password, config);
-  }
-
-  sequelize
-    .authenticate()
-    .then(() => {
-      return true;
-    })
-    .catch((err) => {
-      return false;
-    });
+  return new Promise(function (fulfill, reject){
+    if (config.use_env_variable) {
+      var sequelize = new Sequelize(process.env[config.use_env_variable]);
+    }
+    else {
+      var sequelize = new Sequelize(config.database, config.username, config.password, config);
+    }
+    sequelize
+      .authenticate()
+      .then(() => {
+        fulfill();
+      })
+      .catch((err) => {
+        reject(err);
+      });
+  });
 }
 // Gets all files in the target directory, including subdirectories
 function getAllFiles(dir, filelist) {
@@ -67,19 +71,6 @@ function getAllFiles(dir, filelist) {
 // function to run each specified file through js linter
 function runJsLinter(fileDir, fileName){
   var command = "./node_modules/.bin/eslint " + fileDir + fileName;
-
-
-  /*try {
-    exec(command, (error, stout, sterr) => {
-
-    });
-    console.log(`stdout: ${stdout}`);
-    console.log(`stderr: ${stderr}`);
-  } catch (error) {
-    console.error(`Test failed with the follow error:`);
-    console.error(`${error}`);
-  }*/
-
   exec(command, (error, stdout, stderr) => {
     if (error) {
       //console.error(`exec error: ${error}`);
@@ -94,45 +85,30 @@ function runJsLinter(fileDir, fileName){
 
 function runTest(){
   // Run the npm install
-  var didNpmInstall = npmInstall();
-  // Check npmInstall returned correctly
-  if(didNpmInstall){
-    console.log(chalk.green('NPM Install was successful.'));
+  npmInstall().then(() => {
+    console.log(chalk.green('NPM install was successful.'));
     // Run the database check
-    //var didDatabaseConnect = ;
-    if(testDatabase()){
-      console.log(chalk.green('Connection to database has been established successfully.'));
-      // Run the js linter
-      if(getAllFiles(fileDir)){
+    testDatabase().then(() => {
+      console.log(chalk.green('Database connection was successful.'));
+      // Lint the files
+      getAllFiles().then(() => {
         console.log(chalk.green('Files have all been correctly linted.'));
-        return true;
-      }
-      else {
+        process.exit(0);
+      }).catch((err) => {
+        // Linter has failed
         console.log(chalk.red('Files need attention, please make the amends listed in the console.'));
         process.exit(1);
-        return false;
-      }
-    }
-    else {
-      console.error(chalk.red('Unable to connect to the database:', err));
+      });
+    }).catch((err) => {
+      // Database has failed
+      console.error(chalk.red('Database connection was unsuccessful.'));
       process.exit(1);
-      return false;
-    }
-
-  }
-  else {
-    console.log(chalk.red('Error when running npm install.'));
+    });
+  }).catch((err) => {
+    // NPM install has failed
+    console.error(chalk.red('NPM install was unsuccessful.'));
     process.exit(1);
-    return false;
-  }
+  });
 }
 
-var testResult = runTest();
-
-if(testResult){
-  console.log(chalk.green("All tests have been completed successfully."));
-}
-else {
-  console.log(chalk.red("Tests failed, please see amendments above."));
-  process.exit(1);
-}
+runTest();
