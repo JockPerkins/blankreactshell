@@ -17,10 +17,10 @@ var fileDir = './src/';
 // function to display messages
 function displayMessage(type, place){
   if(type == 'error'){
-    console.error(chalk.red('Error when testing: ' + place));
+    console.error(chalk.red('Error when testing: ' + place + '\n\n'));
   }
   else if(type == 'success'){
-    console.log(chalk.green('Success when testing: ' + place));
+    console.log(chalk.green('Success when testing: ' + place + '\n\n'));
   }
 }
 // function to run the npm install
@@ -79,6 +79,7 @@ function getAllFiles(dir, filelist) {
 // function to run each specified file through js linter
 function runJsLinter(fileDir, files){
   return new Promise(function (fulfill, reject){
+    // run through each file
     for(var index = 0; index < files.length; index++){
       var command = "./node_modules/.bin/eslint " + fileDir + files[index];
       exec(command, (error, stdout, stderr) => {
@@ -97,8 +98,10 @@ function runJsLinter(fileDir, files){
     }
   });
 }
+
 // overall function to run the test
 function runTest(){
+  console.log("Running node package installer");
   // Run the npm install
   npmInstall().then(() => {
     displayMessage('success', 'npm');
@@ -107,11 +110,12 @@ function runTest(){
       displayMessage('success', 'database');
       // Get all files to prepare for linting
       getAllFiles(fileDir).then((result) => {
+        console.log("Getting files...");
         displayMessage('success', 'get files');
         // Lint all of the files we've got
         runJsLinter(fileDir, result).then(() => {
           displayMessage('success', 'jslint');
-          process.exit(0);
+          //process.exit(0);
         }).catch((err) => {
           displayMessage('error', 'jslint');
           console.log(err);
@@ -135,6 +139,5 @@ function runTest(){
     process.exit(1);
   });
 }
-
 
 runTest();
